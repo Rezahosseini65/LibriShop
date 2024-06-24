@@ -11,8 +11,14 @@ INSTALLED_APPS = [
 ]+INSTALLED_APPS
 
 INTERNAL_IPS = [
-    "0.0.0.0",
+    '127.0.0.1',
+    'localhost',
+    '0.0.0.0',
 ]
+
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_TOOLBAR_CALLBACK': lambda request: True,
+}
 
 DATABASES = {
     'default': {

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from librishop.auths.users.models import CustomUser
+from .models import Profile, CustomUser
 
 
 class CustomUserRegisterSerializer(serializers.ModelSerializer):
@@ -17,3 +17,13 @@ class CustomUserRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['username', 'password']
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    firstname = serializers.CharField(source='user.firstname')
+    lastname = serializers.CharField(source='user.lastname')
+
+    class Meta:
+        model = Profile
+        fields = ('id', 'firstname', 'lastname', 'phone_number',
+                  'province', 'city', 'address', 'postal_code')

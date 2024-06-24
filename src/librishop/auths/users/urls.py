@@ -1,9 +1,13 @@
 from django.urls import path, include
 
-from librishop.auths.users.views import UserRegisterView
+from rest_framework.authtoken import views
+
+from librishop.auths.users.views import UserRegisterView, ProfileView
 
 urlpatterns = [
     path('api/', include([
         path('register/', UserRegisterView.as_view(), name='register'),
-    ]), name='api'),
+        path('login/', views.obtain_auth_token, name='login'),
+        path('profile/', ProfileView.as_view(), name='profile'),
+    ])),
 ]
