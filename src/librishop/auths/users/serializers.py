@@ -1,5 +1,6 @@
 from django.core.validators import MinLengthValidator
 
+from django.contrib.auth import authenticate
 from rest_framework import serializers
 
 from .models import Profile, CustomUser
@@ -44,6 +45,20 @@ class CustomUserRegisterSerializer(serializers.ModelSerializer):
 
         user = CustomUser.objects.create_user(email=email, password=password)
         return user
+
+
+class CustomUserLoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, attrs):
+        email = attrs.get('email')
+        password = attrs.get('password')
+        user = authenticate(request=self.context.get('request'), username=email, password=password)
+        if not user:
+            raise serializers.ValidationError("Invalid login credentials", code='invalid_login')
+        attrs['user'] = user
+        return attrs
 
 
 class ProfileSerializer(serializers.ModelSerializer):
