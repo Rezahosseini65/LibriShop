@@ -1,6 +1,6 @@
 from django.core.validators import MinLengthValidator
-
 from django.contrib.auth import authenticate
+
 from rest_framework import serializers
 
 from .models import Profile, CustomUser
@@ -15,9 +15,7 @@ class CustomUserRegisterSerializer(serializers.ModelSerializer):
         MinLengthValidator(limit_value=8),
     ])
 
-    confirm_password = serializers.CharField(write_only=True, validators=[
-        MinLengthValidator(limit_value=8)
-    ])
+    confirm_password = serializers.CharField(write_only=True)
 
     class Meta:
         model = CustomUser
@@ -59,6 +57,21 @@ class CustomUserLoginSerializer(serializers.Serializer):
             raise serializers.ValidationError("Invalid login credentials", code='invalid_login')
         attrs['user'] = user
         return attrs
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    password = serializers.CharField(max_length=128, required=True)
+    new_password = serializers.CharField(max_length=128, required=True, validators=[
+        number_validator,
+        letter_validator,
+        MinLengthValidator(limit_value=8)
+    ])
+    confirm_password = serializers.CharField(max_length=128, write_only=True)
+
+    def validate(self, data):
+        if data.get("new_password") != data.get("confirm_password"):
+            raise serializers.ValidationError("confirm password is not equal to password")
+        return data
 
 
 class ProfileSerializer(serializers.ModelSerializer):
