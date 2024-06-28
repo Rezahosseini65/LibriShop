@@ -24,17 +24,6 @@ services:
       - POSTGRES_USER=librishop
       - POSTGRES_PASSWORD=123@456
 
-  celery:
-    build:
-      context: .
-    command: celery -A librishop worker --beat --loglevel=ifo
-    volumes:
-      - ./src:/src
-    depends_on:
-      - db
-      - rabbitmq
-
-
   rabbitmq:
     image: rabbitmq:3.10-management
     ports:

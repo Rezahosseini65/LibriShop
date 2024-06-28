@@ -8,6 +8,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Profile, CustomUser
 from .serializers import (CustomUserRegisterSerializer, ProfileSerializer,
                           CustomUserLoginSerializer, ChangePasswordSerializer)
+from .tasks import send_password_change_email
 
 
 class UserRegisterView(generics.CreateAPIView):
@@ -64,6 +65,8 @@ class ChangePasswordView(generics.UpdateAPIView):
 
         # Update the session hash to keep the user logged in
         update_session_auth_hash(request, self.object)
+
+        send_password_change_email()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
