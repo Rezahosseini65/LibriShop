@@ -1,0 +1,57 @@
+services:
+  app:
+    build:
+      context: .
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/src
+      - ./data/web:/vol/web
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15.4
+    ports:
+      - "5432:5432"
+    volumes:
+      - librishop-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=librishop
+      - POSTGRES_USER=librishop
+      - POSTGRES_PASSWORD=123@456
+
+  celery:
+    build:
+      context: .
+    command: celery -A librishop worker --beat --loglevel=ifo
+    volumes:
+      - ./src:/src
+    depends_on:
+      - db
+      - rabbitmq
+
+
+  rabbitmq:
+    image: rabbitmq:3.10-management
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - librishop-rabbitmq:/var/lib/rabbitmq
+
+  redis:
+    image: redis:latest
+    ports:
+     - 6379:6379
+    volumes:
+     - librishop-redis:/data
+
+
+volumes:
+  librishop-data:
+  librishop-rabbitmq:
+  librishop-redis:
